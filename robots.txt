@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://soldado.com.ar/sitemap.xml
+Sitemap: https://pagina-oficial-de-soldado.vercel.app/sitemap.xml
