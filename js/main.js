@@ -43,6 +43,71 @@
   );
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
+  /* Canales oficiales: media local, videos mudos en loop */
+  document.querySelectorAll('.media-link img[data-fallback]').forEach((img) => {
+    const useFallback = () => {
+      const fallback = img.dataset.fallback;
+      if (fallback && !img.src.endsWith(fallback)) {
+        img.src = fallback;
+        return;
+      }
+      img.closest('.channel-card')?.classList.add('media-missing');
+    };
+
+    img.addEventListener('error', useFallback);
+    /* Si el archivo ya falló antes de que cargara este script */
+    if (img.complete && img.naturalWidth === 0) useFallback();
+  });
+
+  const channelVideos = document.querySelectorAll('.channel-video');
+  if (channelVideos.length) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    channelVideos.forEach((video) => {
+      video.muted = true;
+      video.loop = true;
+      video.addEventListener(
+        'error',
+        () => video.closest('.channel-card')?.classList.add('media-missing'),
+        true
+      );
+      video.addEventListener('loadeddata', () =>
+        video.closest('.channel-card')?.classList.remove('media-missing')
+      );
+
+      if (reduceMotion) {
+        video.pause();
+      }
+    });
+
+    /* Sólo se reproducen cuando están a la vista */
+    if (reduceMotion) {
+      /* con "reducir movimiento" quedan en pausa mostrando el póster */
+    } else if ('IntersectionObserver' in window) {
+      const playObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+              const attempt = video.play();
+              if (attempt) attempt.catch(() => {});
+            } else {
+              video.pause();
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+
+      channelVideos.forEach((video) => playObserver.observe(video));
+    } else {
+      channelVideos.forEach((video) => {
+        const attempt = video.play();
+        if (attempt) attempt.catch(() => {});
+      });
+    }
+  }
+
   /* Música de fondo (volumen bajo) */
   const bgAudio = document.getElementById('bg-audio');
   const musicBtn = document.getElementById('music-btn');

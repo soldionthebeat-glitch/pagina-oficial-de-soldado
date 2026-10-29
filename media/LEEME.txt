@@ -1,0 +1,20 @@
+CARPETA DE MEDIOS — SECCIÓN "CANALES OFICIALES"
+=============================================
+
+Archivos que usa la web (no los borres ni los renombres):
+
+  media/youtube.mp4         → video de la tarjeta grande de YouTube (1280x720, H.264, 3.5 MB)
+  media/youtube-poster.jpg  → imagen que se ve antes de que arranque ese video
+  media/tiktok.mp4          → video vertical de la tarjeta de TikTok (720x1280, H.264, 5.6 MB)
+  media/tiktok-poster.jpg   → imagen que se ve antes de que arranque ese video
+  media/instagram.jpg       → foto de la tarjeta de Instagram
+
+Los videos están SIN AUDIO, se reproducen en loop, se pausan cuando salen de
+pantalla y respetan la opción "reducir movimiento" del sistema.
+Se cargan recién cuando la sección entra en pantalla (preload="none").
+
+Los originales quedaron en "videos y fotos/" (ignorada por git para no subir 24 MB).
+Si querés reemplazar un video, exportalo como MP4 H.264 720p sin audio y
+sobrescribí el archivo de media/. Después regenerá el póster con:
+
+  ffmpeg -ss 1 -i media/youtube.mp4 -frames:v 1 -q:v 4 media/youtube-poster.jpg
